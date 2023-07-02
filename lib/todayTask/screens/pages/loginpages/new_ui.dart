@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:flutter/src/widgets/placeholder.dart';
 
 import '../../../../main.dart';
 
@@ -47,7 +45,7 @@ class UiPageNew extends StatelessWidget {
         child: Column(
           children: [
             const SizedBox(height: 70),
-            Container(
+            SizedBox(
               height: 200,
               child: Image.asset(
                   'lib/todayTask/screens/pages/loginpagelogo-removebg-preview.png'),
@@ -88,7 +86,7 @@ class UiPageNew extends StatelessWidget {
                           decoration: InputDecoration(
                             //border: InputBorder.none,
                             hintText: 'Username',
-                            prefixIcon: Icon(
+                            prefixIcon: const Icon(
                               Icons.person,
                               color: Colors.black,
                             ),
@@ -122,7 +120,7 @@ class UiPageNew extends StatelessWidget {
                           validator: validatePassword,
                           decoration: InputDecoration(
                             hintText: 'Password',
-                            prefixIcon: Icon(
+                            prefixIcon: const Icon(
                               Icons.key,
                               color: Colors.black,
                             ),

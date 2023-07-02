@@ -5,7 +5,7 @@ import 'package:tasks/todayTask/screens/home.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   prefs = await SharedPreferences.getInstance();
-  runApp(MyApp());
+  runApp(const MyApp());
 }
 
 Color bgColorprimary = Colors.teal;
@@ -13,7 +13,7 @@ Color bgColorSecondary = Colors.grey.shade300;
 SharedPreferences? prefs;
 
 class MyApp extends StatelessWidget {
-  MyApp({super.key});
+  const MyApp({super.key});
 
   // This widget is the root of your application.
   @override
@@ -27,7 +27,7 @@ class MyApp extends StatelessWidget {
           primaryColor: bgColorprimary,
           colorScheme:
               ColorScheme.fromSwatch().copyWith(secondary: bgColorSecondary)),
-      home: HomeScreen(),
+      home: const HomeScreen(),
     );
   }
 }

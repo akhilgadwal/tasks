@@ -60,7 +60,7 @@ class _LoginPageUIState extends State<LoginPageUI> {
           ),
         ),
         child: Column(children: [
-          Expanded(
+          const Expanded(
             flex: 2,
             child: Padding(
               padding: EdgeInsets.all(12),
@@ -108,13 +108,13 @@ class _LoginPageUIState extends State<LoginPageUI> {
                             const SizedBox(
                               height: 80,
                             ),
-                            Text(
+                            const Text(
                               'Email/Number',
                               style: TextStyle(
                                 fontSize: 20,
                               ),
                             ),
-                            SizedBox(
+                            const SizedBox(
                               height: 15,
                             ),
                             SizedBox(
@@ -122,7 +122,7 @@ class _LoginPageUIState extends State<LoginPageUI> {
                               child: TextFormField(
                                 controller: emailPassController,
                                 decoration: InputDecoration(
-                                  enabledBorder: UnderlineInputBorder(
+                                  enabledBorder: const UnderlineInputBorder(
                                     borderSide: BorderSide(
                                         color: Colors
                                             .grey), // Change the color of the underline when the TextField is enabled
@@ -133,7 +133,7 @@ class _LoginPageUIState extends State<LoginPageUI> {
                                             bgColorprimary), // Change the color of the underline when the TextField is focused
                                   ),
                                   labelText: 'Email-Number',
-                                  labelStyle: TextStyle(color: Colors.black54),
+                                  labelStyle: const TextStyle(color: Colors.black54),
                                   //border: OutlineInputBorder(),
                                 ),
                                 validator:
@@ -143,7 +143,7 @@ class _LoginPageUIState extends State<LoginPageUI> {
                             const SizedBox(
                               height: 10,
                             ),
-                            Text(
+                            const Text(
                               'Password',
                               style: TextStyle(fontSize: 20),
                             ),
@@ -153,7 +153,7 @@ class _LoginPageUIState extends State<LoginPageUI> {
                                 obscureText: true,
                                 //controller: emailPassController,
                                 decoration: InputDecoration(
-                                  enabledBorder: UnderlineInputBorder(
+                                  enabledBorder: const UnderlineInputBorder(
                                     borderSide: BorderSide(
                                         color: Colors
                                             .grey), // Change the color of the underline when the TextField is enabled
@@ -164,7 +164,7 @@ class _LoginPageUIState extends State<LoginPageUI> {
                                             bgColorprimary), // Change the color of the underline when the TextField is focused
                                   ),
                                   labelText: 'Password',
-                                  labelStyle: TextStyle(color: Colors.black54),
+                                  labelStyle: const TextStyle(color: Colors.black54),
                                   //border: OutlineInputBorder(),
                                 ),
                                 validator:

@@ -4,6 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../../../main.dart';
 import '../../../http/api.dart';
 
+// ignore: must_be_immutable
 class PlantUi extends StatelessWidget {
   PlantUi({super.key});
   final TextEditingController emailPassController = TextEditingController();
@@ -11,7 +12,7 @@ class PlantUi extends StatelessWidget {
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
   Color kDarkGreenColor = const Color(0xFF184A2C);
   Color kSpiritedGreen = const Color(0xFFC1DFCB);
-  bool _isLoading = false;
+  final bool _isLoading = false;
   String? validateEmailOrNumber(String? value) {
     if (value == null || value.isEmpty) {
       return 'Please enter your email or number';
@@ -126,7 +127,7 @@ class PlantUi extends StatelessWidget {
                                     decoration: InputDecoration(
                                       //border: InputBorder.none,
                                       hintText: 'Username',
-                                      prefixIcon: Icon(
+                                      prefixIcon: const Icon(
                                         Icons.person,
                                         color: Colors.black,
                                       ),
@@ -158,7 +159,7 @@ class PlantUi extends StatelessWidget {
                                     validator: validatePassword,
                                     decoration: InputDecoration(
                                       hintText: 'Password',
-                                      prefixIcon: Icon(
+                                      prefixIcon: const Icon(
                                         Icons.key,
                                         color: Colors.black,
                                       ),

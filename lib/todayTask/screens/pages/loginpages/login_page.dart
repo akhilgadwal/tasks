@@ -44,7 +44,7 @@ class LoginPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar:
-          AppBar(backgroundColor: bgColorprimary, title: Text('Login Page')),
+          AppBar(backgroundColor: bgColorprimary, title: const Text('Login Page')),
       body: Padding(
         padding: const EdgeInsets.all(15.0),
         child: Form(
@@ -55,15 +55,15 @@ class LoginPage extends StatelessWidget {
               const SizedBox(
                 height: 80,
               ),
-              Text(
+              const Text(
                 'Hello',
                 style: TextStyle(fontSize: 35, fontWeight: FontWeight.bold),
               ),
-              Text(
+              const Text(
                 'Welcome back',
                 style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
               ),
-              SizedBox(
+              const SizedBox(
                 height: 15,
               ),
               TextFormField(
@@ -71,7 +71,7 @@ class LoginPage extends StatelessWidget {
                 decoration: InputDecoration(
                   labelText: 'Email-Number',
                   labelStyle: TextStyle(color: bgColorSecondary),
-                  border: OutlineInputBorder(),
+                  border: const OutlineInputBorder(),
                   focusedBorder: OutlineInputBorder(
                     borderSide: BorderSide(color: bgColorprimary),
                   ),
@@ -88,7 +88,7 @@ class LoginPage extends StatelessWidget {
                 decoration: InputDecoration(
                   labelText: 'Password',
                   labelStyle: TextStyle(color: bgColorSecondary),
-                  border: OutlineInputBorder(),
+                  border: const OutlineInputBorder(),
                   focusedBorder: OutlineInputBorder(
                     borderSide: BorderSide(color: bgColorprimary),
                   ),

@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:flutter/src/widgets/placeholder.dart';
 
 import '../../../../main.dart';
 
@@ -42,7 +40,7 @@ class LoginwithOtp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(backgroundColor: bgColorprimary, title: Text('OTP')),
+      appBar: AppBar(backgroundColor: bgColorprimary, title: const Text('OTP')),
       body: Padding(
         padding: const EdgeInsets.all(15.0),
         child: Form(
@@ -53,15 +51,15 @@ class LoginwithOtp extends StatelessWidget {
               const SizedBox(
                 height: 80,
               ),
-              Text(
+              const Text(
                 'Hello',
                 style: TextStyle(fontSize: 35, fontWeight: FontWeight.bold),
               ),
-              Text(
+              const Text(
                 'Login with OTP',
                 style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
               ),
-              SizedBox(
+              const SizedBox(
                 height: 15,
               ),
               TextFormField(
@@ -69,7 +67,7 @@ class LoginwithOtp extends StatelessWidget {
                 decoration: InputDecoration(
                   labelText: 'Email-Number',
                   labelStyle: TextStyle(color: bgColorSecondary),
-                  border: OutlineInputBorder(),
+                  border: const OutlineInputBorder(),
                   focusedBorder: OutlineInputBorder(
                     borderSide: BorderSide(color: bgColorprimary),
                   ),
@@ -86,7 +84,7 @@ class LoginwithOtp extends StatelessWidget {
                 decoration: InputDecoration(
                   labelText: 'Enter OTP',
                   labelStyle: TextStyle(color: bgColorSecondary),
-                  border: OutlineInputBorder(),
+                  border: const OutlineInputBorder(),
                   focusedBorder: OutlineInputBorder(
                     borderSide: BorderSide(color: bgColorprimary),
                   ),
@@ -119,11 +117,11 @@ class LoginwithOtp extends StatelessWidget {
               ),
               Row(
                 children: [
-                  SizedBox(
+                  const SizedBox(
                     width: 30,
                   ),
-                  Text('Check your Email'),
-                  TextButton(onPressed: () {}, child: Text('Resend the code'))
+                  const Text('Check your Email'),
+                  TextButton(onPressed: () {}, child: const Text('Resend the code'))
                 ],
               )
             ],

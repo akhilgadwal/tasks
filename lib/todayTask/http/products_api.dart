@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 import '../model/product.dart';
-import '../utlis/constants/url.dart';
+//import '../utlis/constants/url.dart';
 
 // class ProductApi {
 //   List<ProductData> listProducts = [];

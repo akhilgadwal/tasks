@@ -54,7 +54,7 @@ class _BrandingPageState extends State<BrandingPage> {
           ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(backgroundColor: bgColorSecondary),
-            child: Text('Change primary Color'),
+            child: const Text('Change primary Color'),
             onPressed: () {
               showDialog(
                 context: context,
@@ -75,7 +75,7 @@ class _BrandingPageState extends State<BrandingPage> {
                           Navigator.pushAndRemoveUntil(
                               context,
                               MaterialPageRoute(
-                                  builder: (context) => HomeScreen()),
+                                  builder: (context) => const HomeScreen()),
                               (_) => false);
                         },
                       ),
@@ -111,7 +111,7 @@ class _BrandingPageState extends State<BrandingPage> {
                           Navigator.pushAndRemoveUntil(
                               context,
                               MaterialPageRoute(
-                                  builder: (context) => HomeScreen()),
+                                  builder: (context) => const HomeScreen()),
                               (_) => false);
                         },
                       ),

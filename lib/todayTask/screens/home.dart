@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:tasks/todayTask/screens/pages.dart';
 import 'package:tasks/todayTask/screens/pages/loginpages/login_page.dart';
-import 'package:tasks/todayTask/screens/pages/loginpages/new_ui.dart';
+//import 'package:tasks/todayTask/screens/pages/loginpages/new_ui.dart';
 import 'package:tasks/todayTask/screens/pages/loginpages/opt_page.dart';
 import 'package:tasks/todayTask/screens/pages/loginpages/page3.dart';
 import 'package:tasks/todayTask/screens/pages/loginpages/plant_ui.dart';
@@ -12,7 +12,7 @@ import '../utlis/constants/string_const.dart';
 import 'branding_page.dart';
 
 class HomeScreen extends StatefulWidget {
-  HomeScreen({super.key});
+  const HomeScreen({super.key});
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -121,7 +121,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => ProductListScreen()),
+                        builder: (context) => const ProductListScreen()),
                   );
                 },
                 text: StringConst.page3,
