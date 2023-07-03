@@ -43,8 +43,8 @@ class LoginPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar:
-          AppBar(backgroundColor: bgColorprimary, title: const Text('Login Page')),
+      appBar: AppBar(
+          backgroundColor: bgColorprimary, title: const Text('Login Page')),
       body: Padding(
         padding: const EdgeInsets.all(15.0),
         child: Form(
@@ -96,26 +96,23 @@ class LoginPage extends StatelessWidget {
                 validator: validatePassword, // Validate email or number input
               ),
               const SizedBox(height: 15),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                        backgroundColor: bgColorprimary),
-                    onPressed: () async {
-                      user = await ApiServices.login(emailPassController.text,
-                          passcontroller.text, context);
-                      //if (formKey.currentState!.validate()) {
-                      // Validation passed, do something with the data
-                      // For example, submit the form
-                      //Navigator.pop(context);
-                      //}
-                    },
-                    child: const Text(
-                      'Submit',
-                    ),
+              Center(
+                child: ElevatedButton(
+                  style:
+                      ElevatedButton.styleFrom(backgroundColor: bgColorprimary),
+                  onPressed: () async {
+                    user = await ApiServices.login(
+                        emailPassController.text, passcontroller.text, context);
+                    //if (formKey.currentState!.validate()) {
+                    // Validation passed, do something with the data
+                    // For example, submit the form
+                    //Navigator.pop(context);
+                    //}
+                  },
+                  child: const Text(
+                    'Submit',
                   ),
-                ],
+                ),
               )
             ],
           ),

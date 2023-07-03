@@ -1,5 +1,4 @@
 import 'dart:io';
-import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
@@ -7,6 +6,7 @@ import 'package:tasks/main.dart';
 import 'package:csv/csv.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:open_file/open_file.dart';
+import 'package:tasks/todayTask/utlis/global/global_var.dart';
 
 class ProductData {
   List<Product> products;
@@ -105,10 +105,9 @@ class Product {
 }
 
 class ProductApi {
-  static Future<ProductData> fetchProducts(
-      int page, int limit, int skip) async {
-    final response = await http.get(Uri.parse(
-        'https://dummyjson.com/products?limit=$limit&skip=$skip&select=title,price,images,brand,category,description'));
+  static Future<ProductData> fetchProducts(int limit, int skip) async {
+    final response = await http.get(
+        Uri.parse('https://dummyjson.com/products?limit=$limit&skip=$skip'));
     var data = jsonDecode(response.body);
 
     if (response.statusCode == 200) {
@@ -187,6 +186,8 @@ class _ProductListScreenState extends State<ProductListScreen> {
   int skip = 0; // Initial skip value
   bool isLoading = false;
   bool hasMoreData = true;
+  int selectedIndex = 0;
+  bool isdonwloading = false;
 
   @override
   void initState() {
@@ -200,29 +201,32 @@ class _ProductListScreenState extends State<ProductListScreen> {
         isLoading = true;
       });
 
-      int currentSkip = (page - 1) * limit;
+      // int currentSkip = (page - 1) * limit;
 
       // Call the API to fetch products with pagination
       ProductData productData = await ProductApi.fetchProducts(
-        page,
         limit,
-        currentSkip,
+        skip,
       );
 
       setState(() {
-        if (currentSkip == 0) {
-          productList =
-              productData.products; // Replace the list with fetched products
-        } else {
-          productList.addAll(productData
-              .products); // Append fetched products to the existing list
-        }
+        productList = productData.products;
+        // if (skip == 0) {
+        //   productList =
+        //       productData.products; // Replace the list with fetched products
+        // } else {
+        //   productList.addAll(productData
+        //       .products); // Append fetched products to the existing list
+        // }
         isLoading = false;
 
         if (productData.products.length < limit) {
           hasMoreData = false; // Check if there are more products to fetch
         }
       });
+      // for (var product in productList) {
+      //   print(product.thumbnail);
+      // }
     } catch (e) {
       print('Failed to fetch products: $e');
     }
@@ -238,15 +242,50 @@ class _ProductListScreenState extends State<ProductListScreen> {
   }
 
   Widget buildLoadMoreButton() {
+    double height = 30.0;
     return Container(
-      alignment: Alignment.center,
-      padding: EdgeInsets.all(16.0),
-      child: ElevatedButton(
-        style: ElevatedButton.styleFrom(backgroundColor: bgColorprimary),
-        onPressed: isLoading ? null : loadMoreProducts,
-        child: isLoading ? CircularProgressIndicator() : Text('Load More'),
-      ),
-    );
+        height: height,
+        //color: Colors.green,
+        alignment: Alignment.center,
+        // padding: EdgeInsets.all(16.0),
+        child: Center(
+          child: ListView.separated(
+            padding: const EdgeInsets.symmetric(horizontal: 10),
+            separatorBuilder: (context, index) => const SizedBox(
+              width: 10,
+            ),
+            scrollDirection: Axis.horizontal,
+            itemCount: 10,
+            itemBuilder: (context, index) => GestureDetector(
+              onTap: () {
+                setState(() {
+                  skip = index * 10;
+                  selectedIndex = index;
+                });
+                //print(skip);
+                fetchProducts();
+              },
+              child: Container(
+                alignment: Alignment.center,
+                decoration: BoxDecoration(
+                  color: selectedIndex == index
+                      ? bgColorprimary.withOpacity(0.7)
+                      : Colors.grey.withOpacity(0.3),
+                  borderRadius: BorderRadius.circular(6),
+                ),
+                height: height,
+                width: height,
+                child: Text('${index + 1}'),
+              ),
+            ),
+          ),
+        )
+        // ElevatedButton(
+        //   style: ElevatedButton.styleFrom(backgroundColor: bgColorprimary),
+        //   onPressed: isLoading ? null : loadMoreProducts,
+        //   child: isLoading ? CircularProgressIndicator() : Text('Load More'),
+        // ),
+        );
   }
 
   Widget buildDownloadButton() {
@@ -262,28 +301,30 @@ class _ProductListScreenState extends State<ProductListScreen> {
     );
   }
 
-  Widget buildThumbnailImage(String imageUrl) {
-    return InkWell(
-      onTap: () {
-        showDialog(
-          context: context,
-          builder: (context) {
-            return Dialog(
-              child: Image.network(imageUrl),
-            );
-          },
-        );
-      },
-      child: Image.network(
-        imageUrl,
-        width: 40,
-        height: 40,
-      ),
-    );
-  }
+  // Widget buildThumbnailImage(String imageUrl) {
+  //   return InkWell(
+  //     onTap: () {
+  //       showDialog(
+  //         context: context,
+  //         builder: (context) {
+  //           return Dialog(
+  //             child: Image.network(imageUrl),
+  //           );
+  //         },
+  //       );
+  //     },
+  //     child: Image.network(
+  //       imageUrl,
+  //       width: 40,
+  //       height: 40,
+  //     ),
+  //   );
+  // }
 
   void downloadCSV() async {
     List<List<dynamic>> csvData = [];
+    var prodData = await ProductApi.fetchProducts(100, 0);
+    productList = prodData.products;
 
     // Add table header
     csvData.add([
@@ -313,10 +354,14 @@ class _ProductListScreenState extends State<ProductListScreen> {
 
     // Generate CSV string
     String csvString = const ListToCsvConverter().convert(csvData);
+    //print(csvString);
 
     // Get the document directory path
     final directory = await getExternalStorageDirectory();
+    //print(directory);
+    // final directory = await getExternalStorageDirectory();
     filePath = '${directory!.path}/products.csv';
+    //print(filePath);
 
     // Create the CSV file
     final file = File(filePath!);
@@ -326,7 +371,14 @@ class _ProductListScreenState extends State<ProductListScreen> {
     final result = await OpenFile.open(filePath!);
 
     if (result.type == ResultType.done) {
-      print('CSV file opened successfully');
+      // ignore: use_build_context_synchronously
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+            'CSV File Donwloaded',
+          ),
+        ),
+      );
     } else {
       print('Could not open the CSV file');
     }
@@ -395,51 +447,95 @@ class _ProductListScreenState extends State<ProductListScreen> {
       appBar: AppBar(
         title: const Text('Product List'),
         actions: [
-          GestureDetector(
-              onTap: () {
-                downloadCSV();
-              },
-              child: Icon(Icons.download))
+          isdonwloading
+              ? const Center(
+                  child: CircularProgressIndicator(),
+                )
+              : GestureDetector(
+                  onTap: () {
+                    downloadCSV();
+                  },
+                  child: const Icon(
+                    Icons.download,
+                  ),
+                )
         ],
         backgroundColor: bgColorprimary,
       ),
       body: Column(
         children: [
-          Expanded(
-            child: ListView(
-              children: [
-                SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  child: DataTable(
-                    columns: const [
-                      DataColumn(label: Text('ID')),
-                      DataColumn(label: Text('Title')),
-                      DataColumn(label: Text('Description')),
-                      DataColumn(label: Text('Price')),
-                      DataColumn(label: Text('Rating')),
-                      DataColumn(label: Text('Stock')),
-                      DataColumn(label: Text('Brand')),
-                      DataColumn(label: Text('Category')),
+          isLoading
+              ? const Expanded(
+                  child: Center(
+                    child: CircularProgressIndicator(),
+                  ),
+                )
+              : Expanded(
+                  child: ListView(
+                    children: [
+                      SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        child: DataTable(
+                          dataRowMinHeight: 60.0,
+                          dataRowMaxHeight: 60.0,
+                          columns: const [
+                            DataColumn(label: Text('ID')),
+                            DataColumn(label: Text('Title')),
+                            DataColumn(label: Text('Thumbnail')),
+                            DataColumn(label: Text('Description')),
+                            DataColumn(label: Text('Price')),
+                            DataColumn(label: Text('Rating')),
+                            DataColumn(label: Text('Stock')),
+                            DataColumn(label: Text('Brand')),
+                            DataColumn(label: Text('Category')),
+                          ],
+                          rows: productList.map((product) {
+                            return DataRow(cells: [
+                              DataCell(
+                                Text(
+                                  product.id.toString(),
+                                ),
+                              ),
+                              DataCell(Text(product.title)),
+                              DataCell(
+                                Container(
+                                  width: 120,
+                                  margin:
+                                      const EdgeInsets.symmetric(vertical: 4),
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(10.0),
+                                    image: DecorationImage(
+                                      fit: BoxFit.cover,
+                                      image: NetworkImage(
+                                        product.thumbnail,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              DataCell(Text(product.description)),
+                              DataCell(Text(product.price.toString())),
+                              DataCell(Text(product.rating?.toString() ?? '-')),
+                              DataCell(Text(product.stock.toString())),
+                              DataCell(
+                                Text(product.brand),
+                              ),
+                              DataCell(
+                                Text(product.category),
+                              ),
+                            ]);
+                          }).toList(),
+                        ),
+                      ),
+
+                      //buildDownloadButton(),
                     ],
-                    rows: productList.map((product) {
-                      return DataRow(cells: [
-                        DataCell(Text(product.id.toString())),
-                        DataCell(Text(product.title)),
-                        DataCell(Text(product.description)),
-                        DataCell(Text(product.price.toString())),
-                        DataCell(Text(product.rating?.toString() ?? '-')),
-                        DataCell(Text(product.stock.toString())),
-                        DataCell(Text(product.brand)),
-                        DataCell(Text(product.category)),
-                      ]);
-                    }).toList(),
                   ),
                 ),
-                buildLoadMoreButton(),
-                //buildDownloadButton(),
-              ],
-            ),
+          const SizedBox(
+            height: 10,
           ),
+          buildLoadMoreButton(),
         ],
       ),
     );
