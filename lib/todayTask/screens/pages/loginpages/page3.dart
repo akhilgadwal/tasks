@@ -321,7 +321,118 @@ class _ProductListScreenState extends State<ProductListScreen> {
   //   );
   // }
 
-  void downloadCSV() async {
+  // Future<void> downloadCSV() async {
+  //   List<List<dynamic>> csvData = [];
+  //   var prodData = await ProductApi.fetchProducts(100, 0);
+  //   productList = prodData.products;
+
+  //   // Add table header
+  //   csvData.add([
+  //     'ID',
+  //     'Title',
+  //     'Description',
+  //     'Price',
+  //     'Rating',
+  //     'Stock',
+  //     'Brand',
+  //     'Category',
+  //   ]);
+
+  //   // Add product rows
+  //   for (var product in productList) {
+  //     csvData.add([
+  //       product.id,
+  //       product.title,
+  //       product.description,
+  //       product.price,
+  //       product.rating ?? '-',
+  //       product.stock,
+  //       product.brand,
+  //       product.category,
+  //     ]);
+  //   }
+
+  //   // Generate CSV string
+  //   String csvString = const ListToCsvConverter().convert(csvData);
+  //   //print(csvString);
+
+  //   // Get the document directory path
+  //   final directory = await getExternalStorageDirectory();
+  //   //print(directory);
+  //   // final directory = await getExternalStorageDirectory();
+  //   filePath = '${directory!.path}/products.csv';
+  //   //print(filePath);
+
+  //   // Create the CSV file
+  //   final file = File(filePath!);
+  //   await file.writeAsString(csvString);
+
+  //   // Open the CSV file using open_file package
+  //   final result = await OpenFile.open(filePath!);
+
+  //   if (result.type == ResultType.done) {
+  //     // ignore: use_build_context_synchronously
+  //     ScaffoldMessenger.of(context).showSnackBar(
+  //       const SnackBar(
+  //         content: Text(
+  //           'CSV File Donwloaded',
+  //         ),
+  //       ),
+  //     );
+  //   } else {
+  //     print('Could not open the CSV file');
+  //   }
+  // }
+  // Future<void> downloadCSV() async {
+  //   List<List<dynamic>> csvData = [];
+  //   var prodData = await ProductApi.fetchProducts(100, 0);
+  //   productList = prodData.products;
+
+  //   // Add table header
+  //   csvData.add([
+  //     'ID',
+  //     'Title',
+  //     'Description',
+  //     'Price',
+  //     'Rating',
+  //     'Stock',
+  //     'Brand',
+  //     'Category',
+  //   ]);
+
+  //   // Add product rows
+  //   for (var product in productList) {
+  //     csvData.add([
+  //       product.id,
+  //       product.title,
+  //       product.description,
+  //       product.price,
+  //       product.rating ?? '-',
+  //       product.stock,
+  //       product.brand,
+  //       product.category,
+  //     ]);
+  //   }
+
+  //   // Generate CSV string
+  //   String csvString = const ListToCsvConverter().convert(csvData);
+
+  //   // Get the document directory path
+  //   final directory = await getExternalStorageDirectory();
+  //   filePath = '${directory!.path}/products.csv';
+
+  //   // Create the CSV file
+  //   final file = File(filePath!);
+  //   await file.writeAsString(csvString);
+
+  //   // Show success message to the user
+  //   ScaffoldMessenger.of(context).showSnackBar(
+  //     const SnackBar(
+  //       content: Text('CSV file downloaded successfully'),
+  //     ),
+  //   );
+  // }
+  Future<void> downloadCSV() async {
     List<List<dynamic>> csvData = [];
     var prodData = await ProductApi.fetchProducts(100, 0);
     productList = prodData.products;
@@ -354,92 +465,22 @@ class _ProductListScreenState extends State<ProductListScreen> {
 
     // Generate CSV string
     String csvString = const ListToCsvConverter().convert(csvData);
-    //print(csvString);
 
     // Get the document directory path
     final directory = await getExternalStorageDirectory();
-    //print(directory);
-    // final directory = await getExternalStorageDirectory();
     filePath = '${directory!.path}/products.csv';
-    //print(filePath);
 
     // Create the CSV file
     final file = File(filePath!);
     await file.writeAsString(csvString);
 
-    // Open the CSV file using open_file package
-    final result = await OpenFile.open(filePath!);
-
-    if (result.type == ResultType.done) {
-      // ignore: use_build_context_synchronously
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text(
-            'CSV File Donwloaded',
-          ),
-        ),
-      );
-    } else {
-      print('Could not open the CSV file');
-    }
+    // Show success message with file path to the user
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('CSV file downloaded successfully. File Path: $filePath'),
+      ),
+    );
   }
-
-  // Call the fetchProducts function before calling downloadCSV
-
-  // void fetchProducts() async {
-  //   try {
-  //     setState(() {
-  //       isLoading = true;
-  //     });
-
-  //     int currentSkip = (page - 1) * limit;
-
-  //     // Call the API to fetch products with pagination
-  //     ProductData productData = await ProductApi.fetchProducts(
-  //       page,
-  //       limit,
-  //       currentSkip,
-  //     );
-
-  //     setState(() {
-  //       if (currentSkip == 0) {
-  //         productList =
-  //             productData.products; // Replace the list with fetched products
-  //       } else {
-  //         productList.addAll(productData
-  //             .products); // Append fetched products to the existing list
-  //       }
-  //       isLoading = false;
-
-  //       if (productData.products.length < limit) {
-  //         hasMoreData = false; // Check if there are more products to fetch
-  //       }
-  //     });
-  //   } catch (e) {
-  //     print('Failed to fetch products: $e');
-  //   }
-  // }
-
-  // void loadMoreProducts() {
-  //   if (!isLoading && hasMoreData) {
-  //     setState(() {
-  //       page++;
-  //     });
-  //     fetchProducts();
-  //   }
-  // }
-
-  // Widget buildLoadMoreButton() {
-  //   return Container(
-  //     alignment: Alignment.center,
-  //     padding: EdgeInsets.all(16.0),
-  //     child: ElevatedButton(
-  //       style: ElevatedButton.styleFrom(backgroundColor: bgColorprimary),
-  //       onPressed: isLoading ? null : loadMoreProducts,
-  //       child: isLoading ? CircularProgressIndicator() : Text('Load More'),
-  //     ),
-  //   );
-  // }
 
   @override
   Widget build(BuildContext context) {
@@ -448,15 +489,28 @@ class _ProductListScreenState extends State<ProductListScreen> {
         title: const Text('Product List'),
         actions: [
           isdonwloading
-              ? const Center(
-                  child: CircularProgressIndicator(),
+              ? Padding(
+                  padding: const EdgeInsets.all(10.0),
+                  child: SizedBox(
+                    child: CircularProgressIndicator(
+                      color: bgColorSecondary,
+                    ),
+                  ),
                 )
               : GestureDetector(
-                  onTap: () {
-                    downloadCSV();
+                  onTap: () async {
+                    setState(() {
+                      isdonwloading = true;
+                    });
+                    await Future.delayed(const Duration(seconds: 4));
+                    await downloadCSV();
+                    setState(() {
+                      isdonwloading = false;
+                    });
                   },
-                  child: const Icon(
-                    Icons.download,
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Icon(Icons.download),
                   ),
                 )
         ],
