@@ -5,8 +5,6 @@ import 'package:http/http.dart' as http;
 import 'package:tasks/main.dart';
 import 'package:csv/csv.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:open_file/open_file.dart';
-import 'package:tasks/todayTask/utlis/global/global_var.dart';
 
 class ProductData {
   List<Product> products;
@@ -291,12 +289,13 @@ class _ProductListScreenState extends State<ProductListScreen> {
   Widget buildDownloadButton() {
     return Container(
       alignment: Alignment.center,
-      padding: EdgeInsets.all(16.0),
+      padding: const EdgeInsets.all(16.0),
       child: ElevatedButton(
         onPressed: () {
           downloadCSV();
         },
-        child: Text('Download CSV', style: TextStyle(color: Colors.white)),
+        child:
+            const Text('Download CSV', style: TextStyle(color: Colors.white)),
       ),
     );
   }
@@ -508,8 +507,8 @@ class _ProductListScreenState extends State<ProductListScreen> {
                       isdonwloading = false;
                     });
                   },
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
+                  child: const Padding(
+                    padding: EdgeInsets.all(8.0),
                     child: Icon(Icons.download),
                   ),
                 )
@@ -552,16 +551,42 @@ class _ProductListScreenState extends State<ProductListScreen> {
                               ),
                               DataCell(Text(product.title)),
                               DataCell(
-                                Container(
-                                  width: 120,
-                                  margin:
-                                      const EdgeInsets.symmetric(vertical: 4),
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(10.0),
-                                    image: DecorationImage(
-                                      fit: BoxFit.cover,
-                                      image: NetworkImage(
-                                        product.thumbnail,
+                                GestureDetector(
+                                  onTap: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        fullscreenDialog: true,
+                                        builder: (context) => Container(
+                                          color: Colors.white,
+                                          child: ImagePopup(
+                                            imageUrls: product.images,
+                                          ),
+                                          // child: ListView.builder(
+                                          //   padding: EdgeInsets.symmetric(
+                                          //       vertical: 20),
+                                          //   scrollDirection: Axis.horizontal,
+                                          //   itemCount: product.images.length,
+                                          //   itemBuilder: (context, index) =>
+                                          //       ImagePopup(
+                                          //     imageUrls: product.images,
+                                          //   ),
+                                          // ),
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                  child: Container(
+                                    width: 120,
+                                    margin:
+                                        const EdgeInsets.symmetric(vertical: 4),
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(10.0),
+                                      image: DecorationImage(
+                                        fit: BoxFit.cover,
+                                        image: NetworkImage(
+                                          product.thumbnail,
+                                        ),
                                       ),
                                     ),
                                   ),
@@ -591,6 +616,249 @@ class _ProductListScreenState extends State<ProductListScreen> {
           ),
           buildLoadMoreButton(),
         ],
+      ),
+    );
+  }
+}
+
+// class ImageThumbnail extends StatefulWidget {
+//   final String imageUrl;
+
+//   ImageThumbnail({required this.imageUrl});
+
+//   @override
+//   _ImageThumbnailState createState() => _ImageThumbnailState();
+// }
+
+// class _ImageThumbnailState extends State<ImageThumbnail> {
+//   bool _isImagePopupVisible = false;
+
+//   void _toggleImagePopup() {
+//     setState(() {
+//       _isImagePopupVisible = !_isImagePopupVisible;
+//     });
+//   }
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return GestureDetector(
+//       onTap: _toggleImagePopup,
+//       child: Container(
+//         width: 100,
+//         height: 100,
+//         decoration: BoxDecoration(
+//           image: DecorationImage(
+//             image: NetworkImage(widget.imageUrl),
+//             fit: BoxFit.cover,
+//           ),
+//         ),
+//       ),
+//     );
+//   }
+// }
+
+// class ImagePopup extends StatelessWidget {
+//   final String imageUrl;
+
+//   const ImagePopup({required this.imageUrl});
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return Dialog(
+//       backgroundColor: Colors.white,
+//       child: GestureDetector(
+//         onTap: () {
+//           Navigator.of(context).pop();
+//         },
+//         child: Container(
+//           padding: const EdgeInsets.symmetric(vertical: 10),
+//           width: MediaQuery.of(context).size.width * 0.8,
+//           height: MediaQuery.of(context).size.height * 0.60,
+//           decoration: BoxDecoration(
+//             color: Colors.amber,
+//             image: DecorationImage(
+//               image: NetworkImage(imageUrl),
+//               fit: BoxFit.contain,
+//             ),
+//           ),
+//           child: Stack(
+//             children: [
+//               Align(
+//                 alignment: Alignment.topRight,
+//                 child: IconButton(
+//                   icon: Icon(
+//                     Icons.close,
+//                     color: Colors.white,
+//                   ),
+//                   onPressed: () {
+//                     Navigator.of(context).pop();
+//                   },
+//                 ),
+//               ),
+//               Positioned(
+//                 left: 0,
+//                 right: 0,
+//                 bottom: 0,
+//                 child: Row(
+//                   mainAxisAlignment: MainAxisAlignment.center,
+//                   children: [
+//                     IconButton(
+//                       icon: Icon(
+//                         Icons.arrow_back,
+//                         color: Colors.white,
+//                       ),
+//                       onPressed: () {
+//                         // Handle left arrow button tap
+//                       },
+//                     ),
+//                     IconButton(
+//                       icon: Icon(
+//                         Icons.arrow_forward,
+//                         color: Colors.white,
+//                       ),
+//                       onPressed: () {
+//                         // Handle right arrow button tap
+//                       },
+//                     ),
+//                   ],
+//                 ),
+//               ),
+//             ],
+//           ),
+//         ),
+//       ),
+//     );
+//   }
+// }
+
+class ImagePopup extends StatefulWidget {
+  final List<String> imageUrls;
+  final int initialIndex;
+
+  ImagePopup({required this.imageUrls, this.initialIndex = 0});
+
+  @override
+  _ImagePopupState createState() => _ImagePopupState();
+}
+
+class _ImagePopupState extends State<ImagePopup> {
+  late PageController _pageController;
+  int _currentIndex = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _pageController = PageController(initialPage: widget.initialIndex);
+    _currentIndex = widget.initialIndex;
+  }
+
+  @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
+  }
+
+  void _goToPreviousImage() {
+    if (_currentIndex > 0) {
+      _pageController.previousPage(
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeInOut,
+      );
+      setState(() {
+        _currentIndex--;
+      });
+    }
+  }
+
+  void _goToNextImage() {
+    if (_currentIndex < widget.imageUrls.length - 1) {
+      _pageController.nextPage(
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeInOut,
+      );
+      setState(() {
+        _currentIndex++;
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final isFirstImage = _currentIndex == 0;
+    final isLastImage = _currentIndex == widget.imageUrls.length - 1;
+
+    return Dialog(
+      backgroundColor: Colors.white,
+      child: GestureDetector(
+        onTap: () {
+          Navigator.of(context).pop();
+        },
+        child: Container(
+          padding: const EdgeInsets.symmetric(vertical: 10),
+          width: MediaQuery.of(context).size.width * 0.8,
+          height: MediaQuery.of(context).size.height * 0.60,
+          child: Stack(
+            children: [
+              PageView.builder(
+                controller: _pageController,
+                itemCount: widget.imageUrls.length,
+                onPageChanged: (index) {
+                  setState(() {
+                    _currentIndex = index;
+                  });
+                },
+                itemBuilder: (context, index) {
+                  return Container(
+                    decoration: BoxDecoration(
+                      image: DecorationImage(
+                        image: NetworkImage(widget.imageUrls[index]),
+                        fit: BoxFit.contain,
+                      ),
+                    ),
+                  );
+                },
+              ),
+              Align(
+                alignment: Alignment.topRight,
+                child: IconButton(
+                  icon: Icon(
+                    Icons.close,
+                    color: Colors.black,
+                  ),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                ),
+              ),
+              Positioned(
+                left: 0,
+                right: 0,
+                bottom: 0,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    if (!isFirstImage)
+                      IconButton(
+                        icon: Icon(
+                          Icons.arrow_back,
+                          color: Colors.black,
+                        ),
+                        onPressed: _goToPreviousImage,
+                      ),
+                    if (!isLastImage)
+                      IconButton(
+                        icon: Icon(
+                          Icons.arrow_forward,
+                          color: Colors.black,
+                        ),
+                        onPressed: _goToNextImage,
+                      ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
