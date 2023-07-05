@@ -101,6 +101,7 @@ class Product {
         "images": List<dynamic>.from(images.map((x) => x)),
       };
 }
+//Api Functions
 
 class ProductApi {
   static Future<ProductData> fetchProducts(int limit, int skip) async {
@@ -115,69 +116,24 @@ class ProductApi {
     }
   }
 }
+//List for storing prodcuts
 
-List<Product> productList = [];
-//saving files in saver folder
-
-// Future<void> downloadCSV() async {
-//   List<List<dynamic>> csvData = [];
-
-//   // Add table header
-//   csvData.add([
-//     'ID',
-//     'Title',
-//     'Description',
-//     'Price',
-//     'Rating',
-//     'Stock',
-//     'Brand',
-//     'Category',
-//   ]);
-
-//   // Add product rows
-//   for (var product in productList) {
-//     csvData.add([
-//       product.id,
-//       product.title,
-//       product.description,
-//       product.price,
-//       product.rating ?? '-',
-//       product.stock,
-//       product.brand,
-//       product.category,
-//     ]);
-//   }
-
-//   // Get the directory path using path_provider
-//   Directory? directory = await getExternalStorageDirectory();
-//   if (directory != null) {
-//     String filePath = '${directory.path}/product_list.csv';
-//     File csvFile = File(filePath);
-
-//     // Convert CSV data to String
-//     String csvString = const ListToCsvConverter().convert(csvData);
-
-//     // Write the CSV data to the file
-//     await csvFile.writeAsString(csvString);
-
-//     // Open the CSV file
-//     await OpenFile.open(filePath);
-
-//     print('CSV file saved and opened successfully');
-//   } else {
-//     print('Failed to access directory');
-//   }
-// }
+//List<Product> productList = [];
 
 class ProductListScreen extends StatefulWidget {
   const ProductListScreen({Key? key}) : super(key: key);
 
   @override
+  // ignore: library_private_types_in_public_api
   _ProductListScreenState createState() => _ProductListScreenState();
 }
 
 class _ProductListScreenState extends State<ProductListScreen> {
   List<Product> productList = [];
+  //this list is for search
+  List<Product> filteredProdcuts = [];
+  //creating a controller the textfiled
+  TextEditingController searchController = TextEditingController();
   String? filePath;
   int page = 1;
   int limit = 10;
@@ -186,22 +142,42 @@ class _ProductListScreenState extends State<ProductListScreen> {
   bool hasMoreData = true;
   int selectedIndex = 0;
   bool isdonwloading = false;
+  bool isSearchEmpty = true;
 
   @override
   void initState() {
     super.initState();
-    fetchProducts(); // Load initial data
+    fetchProducts();
+    filteredProdcuts = productList;
+    searchController.addListener(onSearchTextChanged); // Load initial data
   }
 
+  //for textxxt functions
+  void onSearchTextChanged() {
+    if (searchController.text.isEmpty) {
+      isSearchEmpty = true;
+      filteredProdcuts = productList;
+    } else {
+      isSearchEmpty = false;
+      String searchText = searchController.text.toLowerCase();
+      filteredProdcuts = productList.where((product) {
+        return product.title.toLowerCase().contains(searchText) ||
+            product.category.toLowerCase().contains(searchText) ||
+            product.brand.toLowerCase().contains(searchText);
+      }).toList();
+    }
+    setState(() {
+      // Update the filteredProducts list
+      filteredProdcuts = List<Product>.from(filteredProdcuts);
+    });
+  }
+
+//for fetching the products init
   void fetchProducts() async {
     try {
       setState(() {
         isLoading = true;
       });
-
-      // int currentSkip = (page - 1) * limit;
-
-      // Call the API to fetch products with pagination
       ProductData productData = await ProductApi.fetchProducts(
         limit,
         skip,
@@ -209,27 +185,20 @@ class _ProductListScreenState extends State<ProductListScreen> {
 
       setState(() {
         productList = productData.products;
-        // if (skip == 0) {
-        //   productList =
-        //       productData.products; // Replace the list with fetched products
-        // } else {
-        //   productList.addAll(productData
-        //       .products); // Append fetched products to the existing list
-        // }
+        filteredProdcuts = productList;
+
         isLoading = false;
 
-        if (productData.products.length < limit) {
+        if (filteredProdcuts.length < limit) {
           hasMoreData = false; // Check if there are more products to fetch
         }
       });
-      // for (var product in productList) {
-      //   print(product.thumbnail);
-      // }
     } catch (e) {
       print('Failed to fetch products: $e');
     }
   }
 
+//loding more data
   void loadMoreProducts() {
     if (!isLoading && hasMoreData) {
       setState(() {
@@ -277,13 +246,7 @@ class _ProductListScreenState extends State<ProductListScreen> {
               ),
             ),
           ),
-        )
-        // ElevatedButton(
-        //   style: ElevatedButton.styleFrom(backgroundColor: bgColorprimary),
-        //   onPressed: isLoading ? null : loadMoreProducts,
-        //   child: isLoading ? CircularProgressIndicator() : Text('Load More'),
-        // ),
-        );
+        ));
   }
 
   Widget buildDownloadButton() {
@@ -300,137 +263,7 @@ class _ProductListScreenState extends State<ProductListScreen> {
     );
   }
 
-  // Widget buildThumbnailImage(String imageUrl) {
-  //   return InkWell(
-  //     onTap: () {
-  //       showDialog(
-  //         context: context,
-  //         builder: (context) {
-  //           return Dialog(
-  //             child: Image.network(imageUrl),
-  //           );
-  //         },
-  //       );
-  //     },
-  //     child: Image.network(
-  //       imageUrl,
-  //       width: 40,
-  //       height: 40,
-  //     ),
-  //   );
-  // }
-
-  // Future<void> downloadCSV() async {
-  //   List<List<dynamic>> csvData = [];
-  //   var prodData = await ProductApi.fetchProducts(100, 0);
-  //   productList = prodData.products;
-
-  //   // Add table header
-  //   csvData.add([
-  //     'ID',
-  //     'Title',
-  //     'Description',
-  //     'Price',
-  //     'Rating',
-  //     'Stock',
-  //     'Brand',
-  //     'Category',
-  //   ]);
-
-  //   // Add product rows
-  //   for (var product in productList) {
-  //     csvData.add([
-  //       product.id,
-  //       product.title,
-  //       product.description,
-  //       product.price,
-  //       product.rating ?? '-',
-  //       product.stock,
-  //       product.brand,
-  //       product.category,
-  //     ]);
-  //   }
-
-  //   // Generate CSV string
-  //   String csvString = const ListToCsvConverter().convert(csvData);
-  //   //print(csvString);
-
-  //   // Get the document directory path
-  //   final directory = await getExternalStorageDirectory();
-  //   //print(directory);
-  //   // final directory = await getExternalStorageDirectory();
-  //   filePath = '${directory!.path}/products.csv';
-  //   //print(filePath);
-
-  //   // Create the CSV file
-  //   final file = File(filePath!);
-  //   await file.writeAsString(csvString);
-
-  //   // Open the CSV file using open_file package
-  //   final result = await OpenFile.open(filePath!);
-
-  //   if (result.type == ResultType.done) {
-  //     // ignore: use_build_context_synchronously
-  //     ScaffoldMessenger.of(context).showSnackBar(
-  //       const SnackBar(
-  //         content: Text(
-  //           'CSV File Donwloaded',
-  //         ),
-  //       ),
-  //     );
-  //   } else {
-  //     print('Could not open the CSV file');
-  //   }
-  // }
-  // Future<void> downloadCSV() async {
-  //   List<List<dynamic>> csvData = [];
-  //   var prodData = await ProductApi.fetchProducts(100, 0);
-  //   productList = prodData.products;
-
-  //   // Add table header
-  //   csvData.add([
-  //     'ID',
-  //     'Title',
-  //     'Description',
-  //     'Price',
-  //     'Rating',
-  //     'Stock',
-  //     'Brand',
-  //     'Category',
-  //   ]);
-
-  //   // Add product rows
-  //   for (var product in productList) {
-  //     csvData.add([
-  //       product.id,
-  //       product.title,
-  //       product.description,
-  //       product.price,
-  //       product.rating ?? '-',
-  //       product.stock,
-  //       product.brand,
-  //       product.category,
-  //     ]);
-  //   }
-
-  //   // Generate CSV string
-  //   String csvString = const ListToCsvConverter().convert(csvData);
-
-  //   // Get the document directory path
-  //   final directory = await getExternalStorageDirectory();
-  //   filePath = '${directory!.path}/products.csv';
-
-  //   // Create the CSV file
-  //   final file = File(filePath!);
-  //   await file.writeAsString(csvString);
-
-  //   // Show success message to the user
-  //   ScaffoldMessenger.of(context).showSnackBar(
-  //     const SnackBar(
-  //       content: Text('CSV file downloaded successfully'),
-  //     ),
-  //   );
-  // }
+  //csv download funtions
   Future<void> downloadCSV() async {
     List<List<dynamic>> csvData = [];
     var prodData = await ProductApi.fetchProducts(100, 0);
@@ -517,6 +350,40 @@ class _ProductListScreenState extends State<ProductListScreen> {
       ),
       body: Column(
         children: [
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: TextField(
+              controller: searchController,
+              cursorColor: bgColorprimary,
+              decoration: InputDecoration(
+                hintText: 'Search with Title',
+                hintStyle: TextStyle(color: bgColorprimary),
+                prefixIcon: GestureDetector(
+                  onTap: () {
+                    onSearchTextChanged();
+                  },
+                  child: Icon(
+                    Icons.search,
+                    color: bgColorprimary,
+                  ),
+                ),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10.0),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10.0),
+                  borderSide: BorderSide(
+                    color:
+                        bgColorprimary, // Replace with your desired focus color
+                  ),
+                ),
+              ),
+              onChanged: (value) {
+                // Handle search logic here
+                onSearchTextChanged();
+              },
+            ),
+          ),
           isLoading
               ? const Expanded(
                   child: Center(
@@ -542,7 +409,7 @@ class _ProductListScreenState extends State<ProductListScreen> {
                             DataColumn(label: Text('Brand')),
                             DataColumn(label: Text('Category')),
                           ],
-                          rows: productList.map((product) {
+                          rows: filteredProdcuts.map((product) {
                             return DataRow(cells: [
                               DataCell(
                                 Text(
@@ -562,16 +429,6 @@ class _ProductListScreenState extends State<ProductListScreen> {
                                           child: ImagePopup(
                                             imageUrls: product.images,
                                           ),
-                                          // child: ListView.builder(
-                                          //   padding: EdgeInsets.symmetric(
-                                          //       vertical: 20),
-                                          //   scrollDirection: Axis.horizontal,
-                                          //   itemCount: product.images.length,
-                                          //   itemBuilder: (context, index) =>
-                                          //       ImagePopup(
-                                          //     imageUrls: product.images,
-                                          //   ),
-                                          // ),
                                         ),
                                       ),
                                     );
@@ -621,123 +478,15 @@ class _ProductListScreenState extends State<ProductListScreen> {
   }
 }
 
-// class ImageThumbnail extends StatefulWidget {
-//   final String imageUrl;
-
-//   ImageThumbnail({required this.imageUrl});
-
-//   @override
-//   _ImageThumbnailState createState() => _ImageThumbnailState();
-// }
-
-// class _ImageThumbnailState extends State<ImageThumbnail> {
-//   bool _isImagePopupVisible = false;
-
-//   void _toggleImagePopup() {
-//     setState(() {
-//       _isImagePopupVisible = !_isImagePopupVisible;
-//     });
-//   }
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return GestureDetector(
-//       onTap: _toggleImagePopup,
-//       child: Container(
-//         width: 100,
-//         height: 100,
-//         decoration: BoxDecoration(
-//           image: DecorationImage(
-//             image: NetworkImage(widget.imageUrl),
-//             fit: BoxFit.cover,
-//           ),
-//         ),
-//       ),
-//     );
-//   }
-// }
-
-// class ImagePopup extends StatelessWidget {
-//   final String imageUrl;
-
-//   const ImagePopup({required this.imageUrl});
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return Dialog(
-//       backgroundColor: Colors.white,
-//       child: GestureDetector(
-//         onTap: () {
-//           Navigator.of(context).pop();
-//         },
-//         child: Container(
-//           padding: const EdgeInsets.symmetric(vertical: 10),
-//           width: MediaQuery.of(context).size.width * 0.8,
-//           height: MediaQuery.of(context).size.height * 0.60,
-//           decoration: BoxDecoration(
-//             color: Colors.amber,
-//             image: DecorationImage(
-//               image: NetworkImage(imageUrl),
-//               fit: BoxFit.contain,
-//             ),
-//           ),
-//           child: Stack(
-//             children: [
-//               Align(
-//                 alignment: Alignment.topRight,
-//                 child: IconButton(
-//                   icon: Icon(
-//                     Icons.close,
-//                     color: Colors.white,
-//                   ),
-//                   onPressed: () {
-//                     Navigator.of(context).pop();
-//                   },
-//                 ),
-//               ),
-//               Positioned(
-//                 left: 0,
-//                 right: 0,
-//                 bottom: 0,
-//                 child: Row(
-//                   mainAxisAlignment: MainAxisAlignment.center,
-//                   children: [
-//                     IconButton(
-//                       icon: Icon(
-//                         Icons.arrow_back,
-//                         color: Colors.white,
-//                       ),
-//                       onPressed: () {
-//                         // Handle left arrow button tap
-//                       },
-//                     ),
-//                     IconButton(
-//                       icon: Icon(
-//                         Icons.arrow_forward,
-//                         color: Colors.white,
-//                       ),
-//                       onPressed: () {
-//                         // Handle right arrow button tap
-//                       },
-//                     ),
-//                   ],
-//                 ),
-//               ),
-//             ],
-//           ),
-//         ),
-//       ),
-//     );
-//   }
-// }
-
+//For Imagespop
 class ImagePopup extends StatefulWidget {
   final List<String> imageUrls;
   final int initialIndex;
 
-  ImagePopup({required this.imageUrls, this.initialIndex = 0});
+  const ImagePopup({super.key, required this.imageUrls, this.initialIndex = 0});
 
   @override
+  // ignore: library_private_types_in_public_api
   _ImagePopupState createState() => _ImagePopupState();
 }
 
@@ -821,7 +570,7 @@ class _ImagePopupState extends State<ImagePopup> {
               Align(
                 alignment: Alignment.topRight,
                 child: IconButton(
-                  icon: Icon(
+                  icon: const Icon(
                     Icons.close,
                     color: Colors.black,
                   ),
@@ -839,7 +588,7 @@ class _ImagePopupState extends State<ImagePopup> {
                   children: [
                     if (!isFirstImage)
                       IconButton(
-                        icon: Icon(
+                        icon: const Icon(
                           Icons.arrow_back,
                           color: Colors.black,
                         ),
@@ -847,7 +596,7 @@ class _ImagePopupState extends State<ImagePopup> {
                       ),
                     if (!isLastImage)
                       IconButton(
-                        icon: Icon(
+                        icon: const Icon(
                           Icons.arrow_forward,
                           color: Colors.black,
                         ),
