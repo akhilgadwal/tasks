@@ -104,9 +104,9 @@ class Product {
 //Api Functions
 
 class ProductApi {
-  static Future<ProductData> fetchProducts(int limit, int skip) async {
-    final response = await http.get(
-        Uri.parse('https://dummyjson.com/products?limit=$limit&skip=$skip'));
+  static Future<ProductData> fetchProducts() async {
+    final response =
+        await http.get(Uri.parse('https://dummyjson.com/products?limit=100'));
     var data = jsonDecode(response.body);
 
     if (response.statusCode == 200) {
@@ -115,6 +115,17 @@ class ProductApi {
       throw Exception('Failed to fetch products');
     }
   }
+  // static Future<ProductData> fetchProducts(int limit, int skip) async {
+  //   final response = await http.get(
+  //       Uri.parse('https://dummyjson.com/products?limit=$limit&skip=$skip'));
+  //   var data = jsonDecode(response.body);
+
+  //   if (response.statusCode == 200) {
+  //     return ProductData.fromJson(data);
+  //   } else {
+  //     throw Exception('Failed to fetch products');
+  //   }
+  // }
 }
 //List for storing prodcuts
 
@@ -133,7 +144,10 @@ class _ProductListScreenState extends State<ProductListScreen> {
   //this list is for search
   List<Product> filteredProdcuts = [];
   //creating a controller the textfiled
+
   TextEditingController searchController = TextEditingController();
+  //new list
+  List<Product> allProducts = [];
   String? filePath;
   int page = 1;
   int limit = 10;
@@ -152,15 +166,14 @@ class _ProductListScreenState extends State<ProductListScreen> {
     searchController.addListener(onSearchTextChanged); // Load initial data
   }
 
-  //for textxxt functions
   void onSearchTextChanged() {
     if (searchController.text.isEmpty) {
       isSearchEmpty = true;
-      filteredProdcuts = productList;
+      filteredProdcuts = allProducts;
     } else {
       isSearchEmpty = false;
       String searchText = searchController.text.toLowerCase();
-      filteredProdcuts = productList.where((product) {
+      filteredProdcuts = allProducts.where((product) {
         return product.title.toLowerCase().contains(searchText) ||
             product.category.toLowerCase().contains(searchText) ||
             product.brand.toLowerCase().contains(searchText);
@@ -178,13 +191,42 @@ class _ProductListScreenState extends State<ProductListScreen> {
       setState(() {
         isLoading = true;
       });
-      ProductData productData = await ProductApi.fetchProducts(
-        limit,
-        skip,
-      );
+      ProductData productData = await ProductApi.fetchProducts();
+      allProducts = productData.products;
+      setlist();
+      // print(allProducts.length);
 
-      setState(() {
-        productList = productData.products;
+      // setState(
+      //   () {
+      //     productList = productData.products;
+
+      //     filteredProdcuts = productList;
+
+      //     isLoading = false;
+
+      //     if (filteredProdcuts.length < limit) {
+      //       hasMoreData = false; // Check if there are more products to fetch
+      //     }
+      //   },
+      // );
+    } catch (e) {
+      print('Failed to fetch products: $e');
+    }
+  }
+
+  //newfunction setlist
+  void setlist() {
+    productList.clear();
+    List<Product> tempList = [];
+    for (int x = skip; x < (skip + limit); x++) {
+      // print(number[x]);
+      tempList.add(allProducts[x]);
+    }
+    print(tempList);
+    setState(
+      () {
+        productList = tempList;
+
         filteredProdcuts = productList;
 
         isLoading = false;
@@ -192,21 +234,28 @@ class _ProductListScreenState extends State<ProductListScreen> {
         if (filteredProdcuts.length < limit) {
           hasMoreData = false; // Check if there are more products to fetch
         }
-      });
-    } catch (e) {
-      print('Failed to fetch products: $e');
-    }
+      },
+    );
   }
 
 //loding more data
-  void loadMoreProducts() {
-    if (!isLoading && hasMoreData) {
-      setState(() {
-        page++;
-      });
-      fetchProducts();
-    }
-  }
+  // void loadMoreProducts() {
+  //   if (!isLoading && hasMoreData) {
+  //     setState(() {
+  //       page++;
+  //     });
+  //     fetchProducts();
+  //   }
+  // }
+  // void loadMoreProducts() {
+  //   if (!isLoading && hasMoreData) {
+  //     setState(() {
+  //       skip += limit;
+  //     });
+  //     //fetchProducts();
+  //     setlist();
+  //   }
+  // }
 
   Widget buildLoadMoreButton() {
     double height = 30.0;
@@ -230,7 +279,8 @@ class _ProductListScreenState extends State<ProductListScreen> {
                   selectedIndex = index;
                 });
                 //print(skip);
-                fetchProducts();
+                // fetchProducts();
+                setlist();
               },
               child: Container(
                 alignment: Alignment.center,
@@ -266,8 +316,8 @@ class _ProductListScreenState extends State<ProductListScreen> {
   //csv download funtions
   Future<void> downloadCSV() async {
     List<List<dynamic>> csvData = [];
-    var prodData = await ProductApi.fetchProducts(100, 0);
-    productList = prodData.products;
+    // var prodData = await ProductApi.fetchProducts();
+    // productList = prodData.products;
 
     // Add table header
     csvData.add([
@@ -358,15 +408,19 @@ class _ProductListScreenState extends State<ProductListScreen> {
               decoration: InputDecoration(
                 hintText: 'Search with Title',
                 hintStyle: TextStyle(color: bgColorprimary),
-                prefixIcon: GestureDetector(
-                  onTap: () {
-                    onSearchTextChanged();
-                  },
-                  child: Icon(
-                    Icons.search,
-                    color: bgColorprimary,
-                  ),
+                prefixIcon: Icon(
+                  Icons.search,
+                  color: bgColorprimary,
                 ),
+                suffixIcon: searchController.text.isEmpty
+                    ? const SizedBox.shrink()
+                    : GestureDetector(
+                        onTap: () => searchController.clear(),
+                        child: const Icon(
+                          Icons.clear,
+                          color: Colors.redAccent,
+                        ),
+                      ),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10.0),
                 ),
@@ -471,7 +525,9 @@ class _ProductListScreenState extends State<ProductListScreen> {
           const SizedBox(
             height: 10,
           ),
-          buildLoadMoreButton(),
+          searchController.text.isEmpty
+              ? buildLoadMoreButton()
+              : const SizedBox.shrink(),
         ],
       ),
     );

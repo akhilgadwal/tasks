@@ -10,6 +10,7 @@ import '../../main.dart';
 import '../components/buttom.dart';
 import '../utlis/constants/string_const.dart';
 import 'branding_page.dart';
+import 'fourth_page/ui/productsPage.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -133,7 +134,8 @@ class _HomeScreenState extends State<HomeScreen> {
                 onTap: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => PlantUi()),
+                    MaterialPageRoute(
+                        builder: (context) => const ProductPages()),
                   );
                 },
                 text: StringConst.page4,
